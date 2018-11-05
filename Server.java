@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Server 
@@ -113,11 +115,12 @@ public class Server
                 boolean error = stmt.execute("UPDATE client SET balance = balance+ '"+amount+"' WHERE ID = '"+Session_ID+"' ");
                 if(!error)
                 {
-                    String transaction = "Deposit '"+amount+"' LE";  
-                    stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+Session_ID+"','"+transaction+"')");
+                    String transaction = "Deposit '"+amount+"' LE";
                     rs = stmt.executeQuery("SELECT balance FROM client WHERE ID = '"+Session_ID+"'");
                     rs.next();
-                    balance = rs.getInt(1);                                    
+                    balance = rs.getInt(1);
+                    String s = "Deposit " + amount + " LE";
+                    stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+Session_ID+"' ,'"+s+"')");
                 }
             }
         } 
@@ -146,6 +149,8 @@ public class Server
                     rs = stmt.executeQuery("SELECT balance FROM client WHERE ID = '"+Session_ID+"'");
                     rs.next();
                     balance = rs.getInt(1);
+                    String s = "Withdraw " + amount + " LE";
+                    stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+Session_ID+"' ,'"+s+"')");
                 }
                 
             }
@@ -195,6 +200,8 @@ public class Server
                             rs = stmt.executeQuery("SELECT balance FROM client WHERE ID = '"+Session_ID+"'");
                             rs.next();
                             balance = rs.getInt(1);
+                            String s = "Transfer " + amount + " LE to Account ID : " + IDForTheTargetAccount;
+                            stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+Session_ID+"' ,'"+s+"')");
                         }
                     }
                     
@@ -264,11 +271,23 @@ public class Server
         return balance;
     }
     
-    static String ShowHistory(Socket c, int ID){
-        String History = "This is the transaction history";
-        //search the data base by ID and return the history formatted for 
-        //display with no further formatting needed
-        return History;
+    static String ShowHistory(Socket c)
+    {
+        String History = "";
+        try 
+        {
+            DataOutputStream dos = new DataOutputStream(c.getOutputStream());       
+            //get user info
+            dos.writeUTF("Enter your full name:");
+            //search the data base by ID and return the history formatted for
+            rs = stmt.executeQuery("SELECT transaction FROM history WHERE ID = '"+Session_ID+"'");
+            
+            while (rs.next())
+                History += rs.getString(1) + "\n";
+        }
+        catch (Exception ex) {}
+        
+        return History;  
     }
     
     static String username = "root";
@@ -283,6 +302,7 @@ public class Server
         // Create connection to database
         conn = DriverManager.getConnection(conn_string, username, password);
         stmt = conn.createStatement();
+       
 
         // TODO code application logic here
         try
@@ -341,14 +361,16 @@ public class Server
                                     /*case 5:
                                         balance = TransferToAnotherAccountInAnotherBank(c, ID_Session);
                                         dos.writeUTF("Your new balance is:" + balance);
-                                        break;
-                                    case 6:
-                                        String History = ShowHistory(c, ID_Session);
-                                        dos.writeUTF(History);
                                         break;*/
+                                    case 6:
+                                        String History = ShowHistory(c);
+                                        dos.writeUTF(History);
+                                        break;
                                 }
                             }
-                            else {
+                            
+                            else 
+                            {
                                 //do something
                             }
                             break;
