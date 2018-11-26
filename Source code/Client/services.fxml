@@ -11,9 +11,9 @@
    <children>
       <AnchorPane layoutX="-1.0" prefHeight="437.0" prefWidth="270.0" style="-fx-background-color: #2A363B;">
          <children>
-            <Label layoutX="14.0" layoutY="24.0" prefHeight="43.0" prefWidth="138.0" text="menu" textFill="WHITE">
+            <Label fx:id="ID_label" layoutX="60.0" layoutY="24.0" prefHeight="43.0" prefWidth="138.0" textFill="WHITE">
                <font>
-                  <Font size="29.0" />
+                  <Font size="20.0" />
                </font>
             </Label>
             <Button layoutX="23.0" layoutY="73.0" mnemonicParsing="false" onAction="#AccountInfo" prefHeight="31.0" prefWidth="207.0" style="-fx-background-color: #E84A5F;" text="ShowAccountInfo" textFill="WHITE">
@@ -40,6 +40,10 @@
                <font>
                   <Font size="15.0" />
                </font></Button>
+                  <Button fx:id="QuitBTN" layoutX="23.0" layoutY="390.0" mnemonicParsing="false" onAction="#Quit" prefHeight="25.0" prefWidth="207.0" style="-fx-background-color: #E84A5F;" text="Quit" textFill="WHITE">
+               <font>
+                  <Font size="15.0" />
+               </font></Button>
          </children>
       </AnchorPane>
       <Label layoutX="292.0" layoutY="14.0" prefHeight="50.0" prefWidth="314.0" text="Control Your Bank Account" textFill="#2a363b">
@@ -55,48 +59,79 @@
                   <Font size="15.0" />
                </font>
             </Button>
+                  <Label fx:id="Deposit_Error" layoutX="22.0" layoutY="35.0" prefHeight="50.0" prefWidth="200.0" >
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
          </children></AnchorPane>
-      <Label fx:id="Balance" layoutX="292.0" layoutY="245.0" prefHeight="50.0" prefWidth="138.0" text="Your Balance is :" visible="false">
+      <Label fx:id="Balance" layoutX="300.0" layoutY="350.0" prefHeight="50.0" prefWidth="300.0" text="Your Current Balance is :" visible="false">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="BalanceAmount" layoutX="449.0" layoutY="247.0" prefHeight="46.0" prefWidth="138.0" text="Label" textFill="#e80b0b" visible="false">
+      <Label fx:id="BalanceAmount" layoutX="525.0" layoutY="352.0" prefHeight="46.0" prefWidth="138.0" text="Label" textFill="#e80b0b" visible="false">
          <font>
             <Font size="22.0" />
          </font>
       </Label>
-      <AnchorPane fx:id="withdrewAP" layoutX="284.0" layoutY="98.0" prefHeight="78.0" prefWidth="393.0" visible="false">
+      <AnchorPane fx:id="withdrewAP" layoutX="274.0" layoutY="88.0" prefHeight="78.0" prefWidth="302.0" visible="false">
          <children>
-            <TextField fx:id="WithdrewText" layoutX="8.0" layoutY="14.0" prefHeight="31.0" prefWidth="240.0" promptText="Please Put your money" />
+            <TextField fx:id="WithdrewText" layoutX="22.0" layoutY="14.0" prefHeight="31.0" prefWidth="223.0" promptText="Please Put your money" />
             <Button fx:id="WithdrawSubmit" onAction="#WithdrawSubmit" layoutX="257.0" layoutY="14.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="94.0" style="-fx-background-color: #E84A5F;" text="Submit" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
+                   <Label fx:id="withdraw_Error" layoutX="22.0" layoutY="35.0" prefHeight="50.0" prefWidth="200.0" >
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
          </children>
       </AnchorPane>
       <AnchorPane fx:id="TTACAP" layoutX="284.0" layoutY="81.0" prefHeight="145.0" prefWidth="327.0" visible="false">
          <children>
+              <Label fx:id="TTACID_Error" layoutX="18.0" layoutY="85.0" prefHeight="50.0" prefWidth="200.0" >
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+       <Label fx:id="TTACAMT_Error" layoutX="18.0" layoutY="30.0" prefHeight="50.0" prefWidth="200.0" >
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
             <TextField fx:id="TransferDepositTF" layoutX="11.0" layoutY="14.0" prefHeight="31.0" prefWidth="288.0" promptText="Please Put your Money" />
-            <Button fx:id="TransferDepositBT" onAction="#TransferDepositBT" layoutX="182.0" layoutY="100.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="117.0" style="-fx-background-color: #E84A5F;" text="Submit" textFill="WHITE">
+            <Button fx:id="TransferDepositBT" onAction="#TransferDepositBT" layoutX="182.0" layoutY="125.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="117.0" style="-fx-background-color: #E84A5F;" text="Submit" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
-            <TextField fx:id="TransferIDTF" layoutX="11.0" layoutY="57.0" prefHeight="31.0" prefWidth="288.0" promptText="Please Put account ID" />
+            <TextField fx:id="TransferIDTF" layoutX="11.0" layoutY="67.0" prefHeight="31.0" prefWidth="288.0" promptText="Please Put account ID" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="TTABAP" layoutX="294.0" layoutY="70.0" prefHeight="185.0" prefWidth="327.0" visible="false">
          <children>
-            <TextField fx:id="TransferBankDepositTF" layoutX="4.0" layoutY="14.0" prefHeight="31.0" prefWidth="295.0" promptText="Please Put your Money" />
-            <Button fx:id="TTABSubmit" onAction="#TTABSubmit" layoutX="182.0" layoutY="138.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="117.0" style="-fx-background-color: #E84A5F;" text="Submit" textFill="WHITE">
+             <Label fx:id="TTABID_Error" layoutX="305.0" layoutY="108.0" prefHeight="50.0" prefWidth="200.0" >
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+       <Label fx:id="TTABAMT_Error" layoutX="305.0" layoutY="148.0" prefHeight="50.0" prefWidth="200.0" >
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+            <Button fx:id="TTABSubmit" onAction="#TTABSubmit" layoutX="100.0" layoutY="200.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="117.0" style="-fx-background-color: #E84A5F;" text="Submit" textFill="WHITE">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
-            <TextField fx:id="TTABAPID" layoutX="11.0" layoutY="57.0" prefHeight="31.0" prefWidth="288.0" promptText="Please Put account ID" />
-
+               <TextField fx:id="TAB_BIP" layoutX="4.0" layoutY="30.0" prefHeight="31.0" prefWidth="295.0" promptText="Enter Bank IP" />
+            <TextField fx:id="TAB_BPN" layoutX="4.0" layoutY="70.0" prefHeight="31.0" prefWidth="295.0" promptText="Enter Bank Port Number" />
+            <TextField fx:id="TAB_AID" layoutX="4.0" layoutY="110.0" prefHeight="31.0" prefWidth="295.0" promptText="Enter Account ID" />
+            <TextField fx:id="TAB_amount" layoutX="4.0" layoutY="150.0" prefHeight="31.0" prefWidth="295.0" promptText="Enter the amount of money" />       
          </children>
       </AnchorPane>
       <AnchorPane fx:id="HistoryAP" layoutX="294.0" layoutY="81.0" prefHeight="343.0" prefWidth="693.0" visible="false">

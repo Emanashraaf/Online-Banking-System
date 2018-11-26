@@ -2,8 +2,8 @@ package server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.sql.ResultSet;
 import static java.time.Instant.now;
-import java.util.ResourceBundle;
 import static server.Server.db;
 
 
@@ -33,42 +33,51 @@ class clientHandler implements Runnable
                 //"Hello" if it was a client
                 //"I'm another server" if it was server
                 whoAmI = dis.readUTF();
-                System.out.println (whoAmI);
                 if(whoAmI.equalsIgnoreCase("Hello"))
                 {
                     // Ask if the client wants to login or create account
                     dos.writeUTF("Hello");                   
                     
-                    client_resp = dis.readInt();
-                    dos.writeInt(client_resp);                    
-                    switch(client_resp)
-                    {                                      
-                        //login
-                        case 1:
-                            AccountID = dis.readInt();
-                            password = dis.readUTF();
-                            // Logged in
-                            if (server_functions.Login(AccountID , password))
-                                dos.writeUTF("Ok");                       
-                        break;
-                        
-                        //create account
-                        case 2:
-                            Name = dis.readUTF();
-                            password = dis.readUTF();
-                            amount = dis.readInt();  // initial amount   
-                            AccountID = server_functions.CreateAccount(Name , password , amount);
-                            if (AccountID != -1)
-                                dos.writeInt(AccountID);                        
-                    }
-                    
-                    // Make quit condition
-                    while(true)
+
+                    boolean logged_in = false;
+                    while(!logged_in)
                     {
                         client_resp = dis.readInt();
                         dos.writeInt(client_resp);
                         switch(client_resp)
-                        {                     
+                        {                                      
+                            //login
+                            case 1:
+                                AccountID = dis.readInt();
+                                password = dis.readUTF();
+                                // Logged in
+                                logged_in = server_functions.Login(AccountID , password);
+                                dos.writeBoolean(logged_in); 
+                                break;
+
+                            //create account
+                            case 2:
+                                Name = dis.readUTF();
+                                password = dis.readUTF();
+                                amount = dis.readInt();  // initial amount   
+                                AccountID = server_functions.CreateAccount(Name , password , amount);
+                                if (AccountID != -1)
+                                    dos.writeInt(AccountID);
+                                logged_in = true;
+                        }
+                    }
+
+                    while(true)
+                    {
+                        client_resp = dis.readInt();
+                        
+                        // End connection
+                        if (client_resp == 0)
+                            break;
+                        
+                        dos.writeInt(client_resp);
+                        switch(client_resp)
+                        {     
                             // Account Info
                             case 1:
                                 balance = server_functions.ShowAccountInfo();
@@ -99,12 +108,10 @@ class clientHandler implements Runnable
 
                             // Transfer money to another account in another bank    
                             case 5:
+                                P2PServer_IP = dis.readUTF();
+                                P2PServer_PN = dis.readInt();
                                 AccountID = dis.readInt(); // ID of the target account
-                                amount = dis.readInt();
-                                ResourceBundle rb = ResourceBundle.getBundle("server_config");
-                                P2PServer_IP = rb.getString("P2PServer_IP");
-                                P2PServer_PN= Integer.parseInt(rb.getString("P2PServer_PN"));
-
+                                amount = dis.readInt();                             
                                 balance = server_functions.TransferToAnotherAccountInAnotherBank(P2PServer_IP,P2PServer_PN,AccountID,amount);
                                 dos.writeInt(balance);
                                 break;
@@ -123,18 +130,15 @@ class clientHandler implements Runnable
                     
                     // accept transfer
                     if (dis.readInt()==1)
-                    {
-                        
                         dos.writeInt(1);
-                    } 
-                    
+
                     AccountID = dis.readInt(); // ID of the target account
                     amount = dis.readInt();
                     
                     
                     //check data base for target ID
-                    boolean targetIDFound = db.stmt.execute(" SELECT ID FROM client WHERE ID = '"+AccountID+"'");
-                    
+                    ResultSet rs = db.stmt.executeQuery(" SELECT ID FROM client WHERE ID = '"+AccountID+"'");
+                    boolean targetIDFound = rs.next();
                     if(targetIDFound)
                     {
                         //update data base with targetbalance += amount;
@@ -148,6 +152,7 @@ class clientHandler implements Runnable
                         dos.writeBoolean(false);                         
                 }
                 //Close communication with client
+                System.out.println("End Connection");
                 dos.close();
                 dis.close();
                 c.close();

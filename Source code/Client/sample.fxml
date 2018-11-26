@@ -32,6 +32,11 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
+                  <Label fx:id="Error_label" layoutX="22.0" layoutY="200.0" textAlignment="CENTER" textFill="WHITE">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
             <ImageView fitHeight="426.0" fitWidth="625.0" focusTraversable="true" layoutX="-26.0" opacity="0.53" pickOnBounds="true" preserveRatio="true">

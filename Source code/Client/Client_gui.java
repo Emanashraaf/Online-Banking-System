@@ -2,9 +2,14 @@ package client_gui;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ResourceBundle;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,14 +28,23 @@ public class Client_gui extends Application {
         stage.show();
     }
     
+    static File config = new File("Client_config.txt");
+    static Scanner sc = null;
     static public DataOutputStream dos = null;
     static public DataInputStream dis = null;
     static public Socket c;
     public static void main(String[] args) 
     {  
-        ResourceBundle rb = ResourceBundle.getBundle("client_config");
-        String ServerIP = rb.getString("ServerIP");
-        String PortNumber = rb.getString("PortNumber");
+        try 
+        {
+            sc = new Scanner(config);
+        } catch (FileNotFoundException ex) 
+        {
+            Logger.getLogger(Client_gui.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String ServerIP = sc.nextLine();
+        String PortNumber = sc.nextLine();
        
          try 
         {
@@ -49,7 +63,7 @@ public class Client_gui extends Application {
          
          catch (IOException ex) 
         {
-            System.out.println(ex);
+            System.out.println("something went wrong");
         }
         
                  

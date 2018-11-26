@@ -1,23 +1,35 @@
 package server;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ResourceBundle;
-//import java.util.Scanner;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server 
 {
-    static ResourceBundle rb = ResourceBundle.getBundle("server_config"); 
     static public Database db;
-    static public int Session_ID = 0;
-    
+    static public int Session_ID = 0;  
+    static File config = new File("Server_config.txt");
+    static Scanner sc = null;
+   
     public static void main(String[] args) 
-    {      
-        String portNumber = rb.getString("PortNumber");
+    {
+        try 
+        {  
+            sc = new Scanner(config);
+        } 
+        catch (FileNotFoundException ex) 
+        {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String portNumber = sc.nextLine();
         int PN = Integer.parseInt(portNumber);
-       /* Scanner sc = new Scanner(System.in);
+        /* Scanner sc = new Scanner(System.in);
         int pn = sc.nextInt();*/
-        
+        System.out.println(PN);
         // Create Server Socket
         ServerSocket s = null ;
         try 
@@ -46,8 +58,7 @@ public class Server
             clientHandler ch = new clientHandler(c);
             Thread t = new Thread(ch);
             t.start();         
-        }
-        
+        }     
     }
     
 }

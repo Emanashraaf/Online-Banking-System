@@ -30,7 +30,7 @@ public class server_functions
         } 
         catch (Exception ex) 
         {
-             System.out.println(ex);
+            System.out.println("Something went wrong");
         }             
         return false;
     }
@@ -58,13 +58,15 @@ public class server_functions
             }            
             else
             {
-                // Something went wrong
                 return -1;
             }
             String s = "Create account with initial amount " + initial_amount + " LE, at " + now();
             db.stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+ID+"' ,'"+s+"')");
         } 
-        catch (Exception e) {}   
+        catch (Exception e) 
+        {
+            System.out.println("Something went wrong");
+        }   
         
         return ID;
     }
@@ -81,7 +83,10 @@ public class server_functions
             rs.next();
             balance = rs.getInt(1);
         } 
-        catch (SQLException ex){}
+        catch (SQLException ex)
+        {
+            System.out.println("Something went wrong");
+        }
         return balance;
     }
     
@@ -99,9 +104,11 @@ public class server_functions
                 String s = "Deposit " + amount + " LE, at " + now();
                 db.stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+Server.Session_ID+"' ,'"+s+"')");
             }
-        }
-        
-        catch (SQLException e) {}        
+        }        
+        catch (SQLException e) 
+        {
+            System.out.println("Something went wrong");
+        }        
         return balance ;
     }
     
@@ -118,7 +125,7 @@ public class server_functions
             
             if(balance < amount)
             {
-                //do something
+                return -1; //withdraw cannot be done
             }
             else
             {
@@ -134,7 +141,10 @@ public class server_functions
                 
             }
         } 
-        catch (Exception e) {}
+        catch (Exception e)
+        {
+            System.out.println("Something went wrong");
+        }
         return balance;
     }
     
@@ -144,18 +154,23 @@ public class server_functions
         ResultSet rs = null;
         int balance = 0;
         boolean error;
-        try {
-            //check the data base for the target ID            
-            rs = db.stmt.executeQuery(" SELECT ID FROM client WHERE ID = '"+IDForTheTargetAccount+"'");
+        try 
+        {
+            //check if the amount is more than the balance
+            rs = db.stmt.executeQuery("SELECT balance FROM client WHERE ID = '"+Server.Session_ID+"'");
+            rs.next();
+            balance = rs.getInt(1);
             
-            if(rs.next())
+            if(balance < amount)
             {
-                //check if the amount is more than the balance
-                rs = db.stmt.executeQuery("SELECT balance FROM client WHERE ID = '"+Server.Session_ID+"'");
-                rs.next();
-                balance = rs.getInt(1);
-                
-                if (balance >= amount)
+                return -1; //Invalid amount transfer cannot be done
+            }
+            
+            else
+            {
+                //check the data base for the target ID            
+                rs = db.stmt.executeQuery(" SELECT ID FROM client WHERE ID = '"+IDForTheTargetAccount+"'");
+                if(rs.next())
                 {
                     //update target data base with target balance+=amount;
                     error = db.stmt.execute("UPDATE client SET balance = balance+ '"+amount+"' WHERE ID = '"+IDForTheTargetAccount+"' ");
@@ -164,24 +179,23 @@ public class server_functions
                     if(!error)
                     {
                         error = db.stmt.execute("UPDATE client SET balance = balance - '"+amount+"' WHERE ID = '"+Server.Session_ID+"' ");                    
-                        balance = ShowAccountInfo();
+                        balance -= amount;
                         String s = "Transfer " + amount + " LE to Account ID : " + IDForTheTargetAccount + ", at " + now();
                         db.stmt.execute("INSERT INTO history (client_id,transaction) VALUES ('"+Server.Session_ID+"' ,'"+s+"')");
-                    }
+                     }
                 }
                 
                 else
                 {
-                    // do something
+                    return -2; //Target ID isn't found, transfer cannot be done
+
                 }
             }
-            
-            else
-            {
-                //do something
-            }    
         } 
-        catch (Exception e) {}
+        catch (Exception e) 
+        {
+            System.out.println("Something went wrong");
+        }
         return balance;
     }
     
@@ -201,7 +215,7 @@ public class server_functions
             DataInputStream disPTP = null;
             if (amount > balance)
             {
-                // do something
+                return -1;
             }
             
             else
@@ -228,10 +242,8 @@ public class server_functions
                     dosPTP.writeInt(amount);
                     //reading boolean if found or not
                     boolean targetIDFound = disPTP.readBoolean();
-
                     if(targetIDFound)
                     {    
-
                         boolean error = db.stmt.execute("UPDATE client SET balance = balance - '"+amount+"' WHERE ID = '"+Server.Session_ID+"' ");
 
                         if(!error)
@@ -243,7 +255,7 @@ public class server_functions
                     }               
                     else
                     {
-                        //do something
+                        return -2;
                     }    
                 }
                 }
@@ -255,7 +267,10 @@ public class server_functions
             disPTP.close();
             peepToPeerSocket.close();
         }
-        catch (Exception e) {}
+        catch (Exception e) 
+        {
+             System.out.println("Something went wrong");
+        }
         return balance ;
     }
     

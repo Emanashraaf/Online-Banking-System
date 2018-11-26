@@ -15,12 +15,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class Controller implements Initializable 
 {
     String LoginPasswordVar , LoginIDVar;
+    Stage window;
     
     @FXML
     PasswordField LoginPassword;
@@ -29,12 +31,15 @@ public class Controller implements Initializable
     @FXML
     AnchorPane IDPane;
     @FXML
-
+    Label Error_label;
+    
+    static int AccountID;
+   
+    @FXML
     private void SignIn (ActionEvent event) 
     {
         LoginPasswordVar = LoginPassword.getText();
         LoginIDVar = LoginID.getText();
-
         try 
         {
             Client_gui.dos.writeInt(1);
@@ -45,8 +50,10 @@ public class Controller implements Initializable
                 Client_gui.dos.writeUTF(LoginPasswordVar);
             }  
             
-            if ("Ok".equals(dis.readUTF()))
+            boolean logged_in = dis.readBoolean();
+            if (logged_in)
             {
+                Controller.AccountID = Integer.parseInt(LoginIDVar);
                 Parent tableViewParent = FXMLLoader.load(getClass().getResource("services.fxml"));
                 Scene tableViewScene = new Scene(tableViewParent);
 
@@ -59,7 +66,7 @@ public class Controller implements Initializable
             
             else
             {
-                // do something
+                Error_label.setText("Invalid ID or Password!");
             }
         } 
         catch (IOException ex) 
